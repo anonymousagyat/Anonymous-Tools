@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Anonymous-Tools</string>
+    <string name="accessibility_service_name">Anonymous-Tools 3-Finger Gesture</string>
+    <string name="accessibility_service_desc">Enables global 3-finger horizontal swipe gesture detection to capture silent screenshots over any application.</string>
+    <string name="tile_label">Anonymous Capture</string>
+    <string name="notification_channel_name">Capture Service</string>
+    <string name="notification_channel_desc">Active display capture and recording notification.</string>
+    <string name="notification_title">Capture Engine Active</string>
+    <string name="notification_text">Anonymous-Tools is ready for silent captures.</string>
+</resources>

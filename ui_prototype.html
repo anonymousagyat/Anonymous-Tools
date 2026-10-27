@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anonymous-Tools — Screenshot, Screen Recorder & Vault</title>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-cream: #F6F0DF;
+      --lavender: #B9A4E8;
+      --peach: #FFAE88;
+      --dusty-pink: #F84B91;
+      --powder-blue: #A9C8E5;
+      --golden-yellow: #E9B945;
+      --mint-green: #B4F0CE;
+      --light-pink: #F5C5E3;
+      --text-black: #111111;
+      --text-secondary: #393939;
+      --card-white: #FFFFFF;
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #E7DFC9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 32px 16px;
+    }
+
+    /* Showcase Bar */
+    .showcase-header {
+      text-align: center;
+      max-width: 680px;
+      margin-bottom: 24px;
+    }
+
+    .showcase-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--mint-green);
+      color: var(--text-black);
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .showcase-title {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: var(--text-black);
+      margin-bottom: 8px;
+    }
+
+    .showcase-desc {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Screen Selector Pills */
+    .screen-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+
+    .tab-btn {
+      background: var(--card-white);
+      border: 2px solid transparent;
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-black);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: var(--text-black);
+      color: var(--card-white);
+    }
+
+    /* Device Mockup */
+    .device-mockup {
+      width: 100%;
+      max-width: 412px;
+      height: 870px;
+      background: var(--bg-cream);
+      border-radius: 48px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.14), 0 0 0 10px #1e1e1e;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Android Status Bar */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-black);
+      z-index: 10;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* App Scroll Container */
+    .app-screen {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 20px 96px 20px;
+      display: none;
+    }
+
+    .app-screen.active {
+      display: block;
+    }
+
+    .app-screen::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* App Topbar */
+    .app-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .app-title-group h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--text-black);
+      line-height: 1.1;
+    }
+
+    .app-title-group p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .avatar-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-pill);
+      background: var(--powder-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-black);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .avatar-pill:hover {
+      transform: scale(1.05);
+    }
+
+    /* Neo-Brutalist Pastel Cards */
+    .card {
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .card.mint { background-color: var(--mint-green); }
+    .card.powder { background-color: var(--powder-blue); }
+    .card.lavender { background-color: var(--lavender); }
+    .card.peach { background-color: var(--peach); }
+    .card.yellow { background-color: var(--golden-yellow); }
+    .card.pink { background-color: var(--light-pink); }
+    .card.white { background-color: var(--card-white); }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-pill);
+      background: rgba(17, 17, 17, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-black);
+    }
+
+    .badge-pill {
+      background: var(--text-black);
+      color: var(--card-white);
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-pill.outline {
+      background: transparent;
+      color: var(--text-black);
+      border: 1.5px solid var(--text-black);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--text-black);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .card-action-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Pill Buttons */
+    .btn-pill {
+      background: var(--text-black);
+      color: var(--card-white);
+      border: none;
+      padding: 12px 22px;
+      border-radius: var(--radius-pill);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-pill:hover {
+      background: #2a2a2a;
+    }
+
+    .btn-pill.outline {
+      background: transparent;
+      color: var(--text-black);
+      border: 2px solid var(--text-black);
+    }
+
+    .btn-pill.sm {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+
+    /* 2-Column Grid */
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .card-grid-2 .card {
+      margin-bottom: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-grid-2 .card-title {
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+
+    .card-grid-2 .card-desc {
+      font-size: 12.5px;
+      margin-bottom: 14px;
+    }
+
+    /* Pill Switch */
+    .pill-switch {
+      width: 50px;
+      height: 28px;
+      background: #D9D2BF;
+      border-radius: var(--radius-pill);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .pill-switch.on {
+      background: var(--text-black);
+    }
+
+    .pill-switch::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      background: var(--card-white);
+      border-radius: var(--radius-pill);
+      transition: transform 0.2s;
+    }
+
+    .pill-switch.on::after {
+      transform: translateX(22px);
+    }
+
+    /* Gesture Visualizer */
+    .gesture-box {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .gesture-fingers {
+      display: flex;
+      gap: 4px;
+    }
+
+    .finger-indicator {
+      width: 8px;
+      height: 28px;
+      background: var(--text-black);
+      border-radius: 4px;
+      animation: swipeRight 2s ease-in-out infinite;
+    }
+
+    .finger-indicator:nth-child(2) { animation-delay: 0.1s; }
+    .finger-indicator:nth-child(3) { animation-delay: 0.2s; }
+
+    @keyframes swipeRight {
+      0%, 100% { transform: translateX(0); opacity: 0.5; }
+      50% { transform: translateX(16px); opacity: 1; }
+    }
+
+    /* Control Panel Tile Sheet Simulation */
+    .qs-panel-sheet {
+      background: var(--card-white);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .qs-tile-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .qs-tile-item {
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .qs-tile-item:hover {
+      transform: scale(1.02);
+    }
+
+    .qs-tile-item.snap { background: var(--mint-green); }
+    .qs-tile-item.record { background: var(--peach); }
+    .qs-tile-item.vault { background: var(--powder-blue); }
+    .qs-tile-item.settings { background: var(--lavender); }
+
+    /* Vault Grid */
+    .vault-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .vault-item {
+      height: 140px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--card-white);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .vault-item:hover {
+      transform: scale(1.02);
+    }
+
+    .vault-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--text-black);
+      color: var(--card-white);
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .vault-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-black);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vault-date {
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* Floating Navigation Dock */
+    .app-dock {
+      position: absolute;
+      bottom: 18px;
+      left: 20px;
+      right: 20px;
+      height: 64px;
+      background: var(--text-black);
+      border-radius: var(--radius-pill);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 20;
+    }
+
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-pill);
+      transition: all 0.2s ease;
+    }
+
+    .dock-item.active {
+      color: var(--card-white);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Toast Notification */
+    .app-toast {
+      position: absolute;
+      top: 56px;
+      left: 24px;
+      right: 24px;
+      background: var(--text-black);
+      color: var(--card-white);
+      padding: 12px 18px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      transform: translateY(-80px);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .app-toast.visible {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Showcase Header -->
+  <div class="showcase-header">
+    <div class="showcase-badge">
+      <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+      SCREENSHOT • RECORDER • PRIVATE VAULT
+    </div>
+    <h1 class="showcase-title">Anonymous-Tools Prototype</h1>
+    <p class="showcase-desc">
+      Streamlined exclusively for <strong>silent captures</strong> and <strong>screen recording</strong>. Featuring <strong>3-finger horizontal swipe</strong> gesture, <strong>Control Panel (Quick Settings) Tile</strong>, and isolated <strong>Private Vault</strong>.
+    </p>
+  </div>
+
+  <!-- Screen Switcher Tabs -->
+  <div class="screen-tabs">
+    <button class="tab-btn active" onclick="switchScreen('home', this)">
+      <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i> Main Capture Center
+    </button>
+    <button class="tab-btn" onclick="switchScreen('gesture', this)">
+      <i data-lucide="hand" style="width: 16px; height: 16px;"></i> 3-Finger Gesture
+    </button>
+    <button class="tab-btn" onclick="switchScreen('tile', this)">
+      <i data-lucide="sliders" style="width: 16px; height: 16px;"></i> Control Panel Tile
+    </button>
+    <button class="tab-btn" onclick="switchScreen('vault', this)">
+      <i data-lucide="folder-lock" style="width: 16px; height: 16px;"></i> Private Vault (4)
+    </button>
+  </div>
+
+  <!-- Device Mockup -->
+  <div class="device-mockup">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <i data-lucide="wifi" style="width: 16px; height: 16px;"></i>
+        <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
+        <i data-lucide="battery" style="width: 18px; height: 18px;"></i>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="app-toast">
+      <i data-lucide="check-circle" style="width: 18px; height: 18px; color: var(--mint-green);"></i>
+      <span id="toast-msg">Silent screenshot saved to Vault!</span>
+    </div>
+
+    <!-- 1. MAIN CAPTURE CENTER -->
+    <div id="screen-home" class="app-screen active">
+      <div class="app-topbar">
+        <div class="app-title-group">
+          <h1>Capture.</h1>
+          <p>Silent screenshot & recorder</p>
+        </div>
+        <div class="avatar-pill" onclick="switchScreen('vault')">
+          <i data-lucide="folder-lock" style="width: 20px; height: 20px;"></i>
+        </div>
+      </div>
+
+      <!-- Hero Card: Silent Snapshot Action -->
+      <div class="card mint">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="camera" style="width: 24px; height: 24px;"></i>
+          </div>
+          <span class="badge-pill">DISPLAY COMPOSITOR</span>
+        </div>
+        <div class="card-title">Silent Screenshot</div>
+        <div class="card-desc">
+          Capture the screen directly without triggering camera shutter sounds or writing to public Android Gallery.
+        </div>
+        <div class="card-action-row">
+          <button class="btn-pill" onclick="triggerToast('Silent screenshot captured to Vault!')">
+            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> Click Snapshot
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Card 2: Screen Recorder -->
+      <div class="card peach">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="video" style="width: 24px; height: 24px;"></i>
+          </div>
+          <span class="badge-pill">1080P • 60 FPS</span>
+        </div>
+        <div class="card-title">Screen Recorder</div>
+        <div class="card-desc">
+          Hardware-accelerated H.264 video recording saved straight into your private encrypted vault.
+        </div>
+        <div class="card-action-row">
+          <button class="btn-pill" id="record-btn" onclick="toggleRecording(this)">
+            <i data-lucide="circle" style="width: 16px; height: 16px;"></i> Start Recording
+          </button>
+        </div>
+      </div>
+
+      <!-- 2-Column Quick Launch Grid -->
+      <div class="card-grid-2">
+        <!-- Gesture Setting Card -->
+        <div class="card powder" onclick="switchScreen('gesture')">
+          <div class="icon-box" style="margin-bottom: 12px;">
+            <i data-lucide="hand" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div class="card-title">3-Finger Swipe</div>
+          <div class="card-desc">Swipe right with 3 fingers anywhere to snap.</div>
+          <button class="btn-pill sm outline">Configure</button>
+        </div>
+
+        <!-- Quick Settings Tile Card -->
+        <div class="card lavender" onclick="switchScreen('tile')">
+          <div class="icon-box" style="margin-bottom: 12px;">
+            <i data-lucide="sliders" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div class="card-title">Control Tile</div>
+          <div class="card-desc">Quick Settings status bar trigger tile.</div>
+          <button class="btn-pill sm outline">View Setup</button>
+        </div>
+      </div>
+
+      <!-- Vault Quick Card -->
+      <div class="card yellow" onclick="switchScreen('vault')">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="shield" style="width: 22px; height: 22px;"></i>
+          </div>
+          <span class="badge-pill">4 SAVED FILES</span>
+        </div>
+        <div class="card-title">Private Vault</div>
+        <div class="card-desc">
+          Isolated with .nomedia sentinel file. Hidden from other apps and public gallery scanners.
+        </div>
+        <div class="card-action-row">
+          <button class="btn-pill sm">Open Vault <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 3-FINGER SWIPE GESTURE SCREEN -->
+    <div id="screen-gesture" class="app-screen">
+      <div class="app-topbar">
+        <div class="app-title-group">
+          <h1>Gesture.</h1>
+          <p>Global 3-finger trigger</p>
+        </div>
+        <div class="avatar-pill" onclick="switchScreen('home')">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </div>
+      </div>
+
+      <!-- Gesture Card -->
+      <div class="card powder">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="hand" style="width: 24px; height: 24px;"></i>
+          </div>
+          <div class="pill-switch on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="card-title">3-Finger Horizontal Swipe</div>
+        <div class="card-desc">
+          Swipe right horizontally across the screen with three fingers to take an instant silent screenshot over any application.
+        </div>
+
+        <!-- Visual Animated Demo -->
+        <div class="gesture-box">
+          <div class="gesture-fingers">
+            <div class="finger-indicator"></div>
+            <div class="finger-indicator"></div>
+            <div class="finger-indicator"></div>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-black);">
+            SWIPE RIGHT → SNAP
+          </div>
+        </div>
+
+        <div class="card-action-row">
+          <button class="btn-pill sm" onclick="triggerToast('Test: 3-Finger Gesture Triggered!')">Test Gesture</button>
+        </div>
+      </div>
+
+      <!-- Gesture Settings -->
+      <div class="card white">
+        <div class="card-title" style="font-size: 18px; margin-bottom: 12px;">Trigger Preferences</div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(17,17,17,0.08);">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Haptic Feedback</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">Subtle vibration on snap</div>
+          </div>
+          <div class="pill-switch" onclick="this.classList.toggle('on')"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(17,17,17,0.08);">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Accessibility Service</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">Required for global multi-touch</div>
+          </div>
+          <span class="badge-pill outline">ENABLED</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">Gesture Direction</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">Horizontal Right</div>
+          </div>
+          <span style="font-weight: 800; font-size: 13px;">→ Right</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONTROL PANEL QUICK SETTINGS TILE SCREEN -->
+    <div id="screen-tile" class="app-screen">
+      <div class="app-topbar">
+        <div class="app-title-group">
+          <h1>Control Tile.</h1>
+          <p>Quick settings integration</p>
+        </div>
+        <div class="avatar-pill" onclick="switchScreen('home')">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </div>
+      </div>
+
+      <div class="card lavender">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="sliders" style="width: 24px; height: 24px;"></i>
+          </div>
+          <span class="badge-pill">TILE SERVICE</span>
+        </div>
+        <div class="card-title">Notification Shade Tile</div>
+        <div class="card-desc">
+          Add the <strong>Anonymous-Tools</strong> tile alongside Wi-Fi and Mobile Data. Tapping it opens a quick popup sheet with capture controls.
+        </div>
+      </div>
+
+      <!-- Quick Settings Popup Sheet Simulation -->
+      <div class="qs-panel-sheet">
+        <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+          Tile Popup Menu Preview
+        </div>
+        <div style="font-size: 18px; font-weight: 800; margin-top: 4px;">Choose Capture Action</div>
+
+        <div class="qs-tile-row">
+          <div class="qs-tile-item snap" onclick="triggerToast('Silent snapshot taken via QS Tile!')">
+            <i data-lucide="camera" style="width: 24px; height: 24px;"></i>
+            <div style="font-weight: 800; font-size: 14px;">Snapshot</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Instant silent capture</div>
+          </div>
+
+          <div class="qs-tile-item record" onclick="triggerToast('Screen recording initiated via QS Tile!')">
+            <i data-lucide="video" style="width: 24px; height: 24px;"></i>
+            <div style="font-weight: 800; font-size: 14px;">Record</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">1080p video stream</div>
+          </div>
+
+          <div class="qs-tile-item vault" onclick="switchScreen('vault')">
+            <i data-lucide="folder-lock" style="width: 24px; height: 24px;"></i>
+            <div style="font-weight: 800; font-size: 14px;">Vault</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">View 4 captures</div>
+          </div>
+
+          <div class="qs-tile-item settings" onclick="switchScreen('home')">
+            <i data-lucide="settings" style="width: 24px; height: 24px;"></i>
+            <div style="font-weight: 800; font-size: 14px;">Settings</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Resolution & audio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PRIVATE VAULT SCREEN -->
+    <div id="screen-vault" class="app-screen">
+      <div class="app-topbar">
+        <div class="app-title-group">
+          <h1>Vault.</h1>
+          <p>Protected media storage</p>
+        </div>
+        <div class="avatar-pill" onclick="switchScreen('home')">
+          <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+        </div>
+      </div>
+
+      <!-- Vault Banner -->
+      <div class="card mint">
+        <div class="card-top-row">
+          <div class="icon-box">
+            <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
+          </div>
+          <span class="badge-pill">.NOMEDIA ENFORCED</span>
+        </div>
+        <div class="card-title">Encrypted & Hidden</div>
+        <div class="card-desc">
+          Protected in app-private storage. Third-party apps cannot scan or discover these photos or recordings.
+        </div>
+      </div>
+
+      <!-- Filter Chips -->
+      <div style="display: flex; gap: 8px; margin-top: 14px;">
+        <button class="btn-pill sm" style="background: var(--text-black); color: white;">All (4)</button>
+        <button class="btn-pill sm outline">Screenshots (3)</button>
+        <button class="btn-pill sm outline">Videos (1)</button>
+      </div>
+
+      <!-- Vault Grid -->
+      <div class="vault-grid">
+        <div class="vault-item" style="background: var(--light-pink);" onclick="triggerToast('Viewing Snap_1026_2210.png')">
+          <span class="vault-tag">SNAP</span>
+          <i data-lucide="image" style="width: 32px; height: 32px; margin-bottom: auto; opacity: 0.6;"></i>
+          <div class="vault-title">Snap_1026_2210.png</div>
+          <div class="vault-date">Today, 10:10 PM • 2.4 MB</div>
+        </div>
+
+        <div class="vault-item" style="background: var(--peach);" onclick="triggerToast('Playing Rec_1026_2145.mp4')">
+          <span class="vault-tag">VIDEO</span>
+          <i data-lucide="play-circle" style="width: 32px; height: 32px; margin-bottom: auto; opacity: 0.6;"></i>
+          <div class="vault-title">Rec_1026_2145.mp4</div>
+          <div class="vault-date">Today, 09:45 PM • 14.8 MB</div>
+        </div>
+
+        <div class="vault-item" style="background: var(--powder-blue);" onclick="triggerToast('Viewing Snap_1025_1820.png')">
+          <span class="vault-tag">SNAP</span>
+          <i data-lucide="image" style="width: 32px; height: 32px; margin-bottom: auto; opacity: 0.6;"></i>
+          <div class="vault-title">Snap_1025_1820.png</div>
+          <div class="vault-date">Yesterday • 1.9 MB</div>
+        </div>
+
+        <div class="vault-item" style="background: var(--lavender);" onclick="triggerToast('Viewing Snap_1024_0912.png')">
+          <span class="vault-tag">SNAP</span>
+          <i data-lucide="image" style="width: 32px; height: 32px; margin-bottom: auto; opacity: 0.6;"></i>
+          <div class="vault-title">Snap_1024_0912.png</div>
+          <div class="vault-date">Oct 24 • 3.1 MB</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+        <button class="btn-pill sm outline" onclick="triggerToast('Vault Shredded! All buffers wiped.')">
+          <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Shred Vault
+        </button>
+      </div>
+    </div>
+
+    <!-- Floating Bottom Navigation Dock -->
+    <div class="app-dock">
+      <div class="dock-item active" id="dock-home" onclick="switchScreen('home')">
+        <i data-lucide="camera" style="width: 22px; height: 22px;"></i>
+      </div>
+      <div class="dock-item" id="dock-gesture" onclick="switchScreen('gesture')">
+        <i data-lucide="hand" style="width: 22px; height: 22px;"></i>
+      </div>
+      <div class="dock-item" id="dock-tile" onclick="switchScreen('tile')">
+        <i data-lucide="sliders" style="width: 22px; height: 22px;"></i>
+      </div>
+      <div class="dock-item" id="dock-vault" onclick="switchScreen('vault')">
+        <i data-lucide="folder-lock" style="width: 22px; height: 22px;"></i>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function switchScreen(screenId, btnElement) {
+      document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('screen-' + screenId);
+      if (target) target.classList.add('active');
+
+      if (btnElement) {
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        btnElement.classList.add('active');
+      }
+
+      document.querySelectorAll('.dock-item').forEach(el => el.classList.remove('active'));
+      const activeDock = document.getElementById('dock-' + screenId);
+      if (activeDock) activeDock.classList.add('active');
+
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function toggleRecording(btn) {
+      if (btn.classList.contains('recording')) {
+        btn.classList.remove('recording');
+        btn.style.background = 'var(--text-black)';
+        btn.innerHTML = '<i data-lucide="circle" style="width: 16px; height: 16px;"></i> Start Recording';
+        triggerToast('Screen recording stopped & saved to Vault!');
+      } else {
+        btn.classList.add('recording');
+        btn.style.background = 'var(--dusty-pink)';
+        btn.innerHTML = '<i data-lucide="square" style="width: 16px; height: 16px;"></i> Stop Recording';
+        triggerToast('Recording started...');
+      }
+      lucide.createIcons();
+    }
+
+    function triggerToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.innerText = msg;
+      toast.classList.add('visible');
+      setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
