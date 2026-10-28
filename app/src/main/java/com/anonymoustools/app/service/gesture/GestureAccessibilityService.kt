@@ -3,6 +3,8 @@ package com.anonymoustools.app.service.gesture
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.AudioManager
+import android.media.MediaActionSound
 import android.os.*
 import android.util.Log
 import android.view.Display
@@ -25,9 +27,18 @@ class GestureAccessibilityService : AccessibilityService() {
             private set
     }
 
+    private var mediaActionSound: MediaActionSound? = null
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+        try {
+            mediaActionSound = MediaActionSound().apply {
+                load(MediaActionSound.SHUTTER_CLICK)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize MediaActionSound", e)
+        }
         Log.d(TAG, "GestureAccessibilityService connected successfully")
     }
 
@@ -35,6 +46,29 @@ class GestureAccessibilityService : AccessibilityService() {
         super.onDestroy()
         if (instance == this) {
             instance = null
+        }
+        try {
+            mediaActionSound?.release()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        mediaActionSound = null
+    }
+
+    fun playScreenshotSound() {
+        try {
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+            // Strictly play ONLY when device is in normal audible ringer mode (NOT silent or vibrate)
+            if (audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL) {
+                if (mediaActionSound == null) {
+                    mediaActionSound = MediaActionSound().apply {
+                        load(MediaActionSound.SHUTTER_CLICK)
+                    }
+                }
+                mediaActionSound?.play(MediaActionSound.SHUTTER_CLICK)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to play screenshot sound", e)
         }
     }
 
@@ -242,10 +276,15 @@ class GestureAccessibilityService : AccessibilityService() {
     }
 
     /**
-     * Native Android 11+ silent screenshot.
-     * ZERO casting prompt. ZERO screen-share dialog. ZERO shutter sound.
+     * Native Android 11+ screenshot capture.
+     * ZERO casting prompt. ZERO screen-share dialog.
+     * Plays shutter sound only when device is in normal audible ringer mode.
      */
     fun takeSilentScreenshot(onComplete: ((File?) -> Unit)? = null) {
+        takeSilentScreenshot(playSound = true, onComplete = onComplete)
+    }
+
+    fun takeSilentScreenshot(playSound: Boolean, onComplete: ((File?) -> Unit)? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 takeScreenshot(
@@ -264,6 +303,9 @@ class GestureAccessibilityService : AccessibilityService() {
 
                             if (bitmap != null) {
                                 performVibration()
+                                if (playSound) {
+                                    playScreenshotSound()
+                                }
                                 val file = PrivateVaultManager.saveSnapshot(this@GestureAccessibilityService, bitmap)
                                 Handler(Looper.getMainLooper()).post {
                                     Toast.makeText(applicationContext, "Snapshot saved to Vault!", Toast.LENGTH_SHORT).show()
