@@ -45,7 +45,7 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteItem(item: CaptureItem) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                PrivateVaultManager.deleteItem(item.file)
+                PrivateVaultManager.deleteItem(getApplication(), item.file)
             }
             loadItems()
             _uiState.update { it.copy(message = "Deleted ${item.name}") }
@@ -66,6 +66,9 @@ class VaultViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val success = withContext(Dispatchers.IO) {
                 PrivateVaultManager.exportToPublicGallery(getApplication(), item)
+            }
+            if (success) {
+                loadItems()
             }
             _uiState.update {
                 it.copy(message = if (success) "Exported ${item.name} to Gallery!" else "Export failed")

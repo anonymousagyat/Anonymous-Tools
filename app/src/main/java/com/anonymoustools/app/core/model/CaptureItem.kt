@@ -12,5 +12,6 @@ data class CaptureItem(
     val name: String,
     val type: CaptureType,
     val sizeBytes: Long,
-    val timestamp: Long
+    val timestamp: Long,
+    val isExported: Boolean = false
 )

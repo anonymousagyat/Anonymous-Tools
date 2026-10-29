@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -324,16 +325,41 @@ fun VaultMediaCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = PillShape,
-                        color = TextBlack
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            text = if (item.type == CaptureType.SNAPSHOT) "IMAGE" else "VIDEO",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = CardWhite,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
+                        Surface(
+                            shape = PillShape,
+                            color = TextBlack
+                        ) {
+                            Text(
+                                text = if (item.type == CaptureType.SNAPSHOT) "IMAGE" else "VIDEO",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = CardWhite,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+
+                        if (item.isExported) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Exported",
+                                    tint = Color(0xFF1B873F),
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Text(
+                                    text = "EXPORTED",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color(0xFF1B873F),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
 
                     val sizeMb = String.format(Locale.US, "%.1f MB", item.sizeBytes / (1024f * 1024f))

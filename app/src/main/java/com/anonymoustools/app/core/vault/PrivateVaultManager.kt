@@ -17,7 +17,38 @@ import java.util.*
 object PrivateVaultManager {
 
     private const val VAULT_DIR_NAME = "anonymous_vault"
+    private const val PREFS_EXPORTED = "vault_export_history"
+    private const val KEY_EXPORTED_SET = "exported_files"
     private val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+
+    fun getExportedSet(context: Context): Set<String> {
+        val prefs = context.getSharedPreferences(PREFS_EXPORTED, Context.MODE_PRIVATE)
+        return prefs.getStringSet(KEY_EXPORTED_SET, emptySet()) ?: emptySet()
+    }
+
+    fun isExported(context: Context, fileName: String): Boolean {
+        return getExportedSet(context).contains(fileName)
+    }
+
+    fun markAsExported(context: Context, fileName: String) {
+        val prefs = context.getSharedPreferences(PREFS_EXPORTED, Context.MODE_PRIVATE)
+        val current = prefs.getStringSet(KEY_EXPORTED_SET, emptySet())?.toMutableSet() ?: mutableSetOf()
+        current.add(fileName)
+        prefs.edit().putStringSet(KEY_EXPORTED_SET, current).apply()
+    }
+
+    fun unmarkExported(context: Context, fileName: String) {
+        val prefs = context.getSharedPreferences(PREFS_EXPORTED, Context.MODE_PRIVATE)
+        val current = prefs.getStringSet(KEY_EXPORTED_SET, emptySet())?.toMutableSet() ?: return
+        if (current.remove(fileName)) {
+            prefs.edit().putStringSet(KEY_EXPORTED_SET, current).apply()
+        }
+    }
+
+    fun clearExportedHistory(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_EXPORTED, Context.MODE_PRIVATE)
+        prefs.edit().remove(KEY_EXPORTED_SET).apply()
+    }
 
     fun getVaultDir(context: Context): File {
         val dir = File(context.getExternalFilesDir(null), VAULT_DIR_NAME)
@@ -58,6 +89,8 @@ object PrivateVaultManager {
                          f.extension.equals("mp4", ignoreCase = true))
         } ?: return emptyList()
 
+        val exportedSet = getExportedSet(context)
+
         return files.map { file ->
             val type = if (file.extension.equals("mp4", ignoreCase = true)) {
                 CaptureType.VIDEO
@@ -69,16 +102,21 @@ object PrivateVaultManager {
                 name = file.name,
                 type = type,
                 sizeBytes = file.length(),
-                timestamp = file.lastModified()
+                timestamp = file.lastModified(),
+                isExported = exportedSet.contains(file.name)
             )
         }.sortedByDescending { it.timestamp }
     }
 
-    fun deleteItem(file: File): Boolean {
+    fun deleteItem(context: Context? = null, file: File): Boolean {
+        if (context != null) {
+            unmarkExported(context, file.name)
+        }
         return file.exists() && file.delete()
     }
 
     fun shredVault(context: Context): Int {
+        clearExportedHistory(context)
         val dir = getVaultDir(context)
         var count = 0
         dir.listFiles()?.forEach { file ->
@@ -92,7 +130,7 @@ object PrivateVaultManager {
     fun exportToPublicGallery(context: Context, item: CaptureItem): Boolean {
         return try {
             val resolver = context.contentResolver
-            if (item.type == CaptureType.SNAPSHOT) {
+            val success = if (item.type == CaptureType.SNAPSHOT) {
                 val contentValues = ContentValues().apply {
                     put(MediaStore.Images.Media.DISPLAY_NAME, item.name)
                     put(MediaStore.Images.Media.MIME_TYPE, "image/png")
@@ -119,6 +157,10 @@ object PrivateVaultManager {
                 }
                 true
             }
+            if (success) {
+                markAsExported(context, item.name)
+            }
+            success
         } catch (e: Exception) {
             e.printStackTrace()
             false
