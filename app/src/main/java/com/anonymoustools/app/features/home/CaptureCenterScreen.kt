@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.anonymoustools.app.core.capture.CaptureManager
 import com.anonymoustools.app.core.vault.PrivateVaultManager
@@ -85,6 +86,15 @@ fun CaptureCenterScreen(
                     text = "Silent capture & private storage",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "PARI-2018",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 10.5.sp,
+                        letterSpacing = 0.6.sp
+                    ),
+                    color = Color(0xFF757575)
                 )
             }
         }
